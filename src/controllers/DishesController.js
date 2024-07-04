@@ -53,9 +53,18 @@ class DishesController {
   }
 
   async index(req, res){
-    const dishes = await knex('dishes');
+    const { name } = req.query;
+    
+    let dishes;
 
-    res.json(dishes);
+    if(name){
+      dishes = await knex('dishes').whereLike("name", `%${name}%`);
+    } else {
+      dishes = await knex('dishes');
+    }
+    
+
+    return res.json(dishes);
   }
 }
 
