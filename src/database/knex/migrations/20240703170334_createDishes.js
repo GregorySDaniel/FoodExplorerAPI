@@ -2,11 +2,10 @@ exports.up = function(knex) {
   return knex.schema.createTable("dishes", table => {
     table.increments('id');
     table.text('image'); 
-    table.text('name'); 
-    table.text('category'); 
+    table.text('name').notNullable();
+    table.enu('category', ['Meals', 'Dessert', 'Drinks']).notNullable();
     table.text('description'); 
-    table.text('ingredients'); 
-    table.decimal('price', 8, 2);
+    table.decimal('price', 8, 2).notNullable();
     
     table.timestamp("created_at").default(knex.fn.now());
     table.timestamp("updated_at").default(knex.fn.now());
