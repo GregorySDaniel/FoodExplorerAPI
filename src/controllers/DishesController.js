@@ -1,11 +1,16 @@
 const knex = require('../database/knex');
 const AppError = require('../utils/AppError');
+const DiskStorage = require('../providers/DiskStorage');
 
 class DishesController {
   async create(req, res){
     const { name, category, description, ingredients, price } = req.body;
+    const dish_img = req.file.filename;
 
-    if(!name || !description || !price) {
+    const diskStorage = new DiskStorage();
+    const filename = await diskStorage.saveFile(dish_img);
+
+    if(!name || !description || !price || !category ) {
       throw new AppError("Preencha todas as informações obrigatórias sobre o prato.", 401);
     }
 
@@ -14,20 +19,21 @@ class DishesController {
       name,
       category,
       description,
-      price
-    });
-    
-    const ingredientsInsert = ingredients.map((ingredient) => {
-      return{
-        dish_id,
-        name: ingredient
-      }
+      price,
+      image : filename
     });
 
-    await knex('ingredients').insert(ingredientsInsert);
-    
+    if(ingredients){
+      const ingredientsInsert = ingredients.map((ingredient) => {
+        return{
+          dish_id,
+          name: ingredient
+        }
+      });
+      await knex('ingredients').insert(ingredientsInsert);
+    }
 
-    return res.json({name, category, description, ingredients, price});
+    return res.json({name, category, description, ingredients, price, filename});
   }
 
   async show(req, res){
@@ -44,6 +50,14 @@ class DishesController {
 
   async delete(req, res){
     const { id } = req.params;
+    const dish = await knex('dishes').where({ id }).first();
+
+    if (!dish) {
+      throw new AppError('Prato não existe mais', 401);
+    }
+
+    const diskStorage = new DiskStorage();
+    await diskStorage.deleteFile(dish.image);
 
     await knex('dishes').where({ id }).delete();
 
