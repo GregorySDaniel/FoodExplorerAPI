@@ -24,12 +24,10 @@ class DishesController {
       }
     });
 
-    console.log(ingredientsInsert)
-
     await knex('ingredients').insert(ingredientsInsert);
     
 
-    res.json({name, category, description, ingredients, price});
+    return res.json({name, category, description, ingredients, price});
   }
 
   async show(req, res){

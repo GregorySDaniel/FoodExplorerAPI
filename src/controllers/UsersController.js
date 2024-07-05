@@ -2,6 +2,7 @@ const AppError = require('../utils/AppError');
 const { hash } = require('bcryptjs');
 const knex = require('../database/knex');
 
+
 class UsersController {
   async create(req, res){
     const { name, email, password } = req.body;
