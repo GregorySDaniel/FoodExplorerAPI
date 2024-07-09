@@ -3,7 +3,7 @@ exports.up = function(knex) {
     table.increments('id');
     table.text('image'); 
     table.text('name').notNullable();
-    table.enu('category', ['meals', 'dessert', 'drinks']).notNullable();
+    table.enum('category', ['meals', 'dessert', 'drinks']).notNullable();
     table.text('description'); 
     table.decimal('price', 8, 2).notNullable();
     

@@ -7,7 +7,7 @@ const { sign } = require('jsonwebtoken');
 class SessionsController {
   async create(req, res){
     const { email, password } = req.body;
-
+    
     const user = await knex('users').where({ email }).first();
 
     if(!user){
@@ -21,7 +21,7 @@ class SessionsController {
     }
 
     const { secret, expiresIn } = authConfig.jwt;
-    const token = sign({}, secret, {
+    const token = sign({ role: user.role }, secret, {
       subject: String(user.id),
       expiresIn
     })
