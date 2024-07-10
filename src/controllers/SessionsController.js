@@ -25,8 +25,17 @@ class SessionsController {
       subject: String(user.id),
       expiresIn
     })
+
+    res.cookie('token', token, {
+      httpOnly: true,
+      sameSide: 'none',
+      secure: true,
+      maxAge: 15*60*1000
+    });
+
+    delete user.password;
     
-    return res.json({user, token});
+    return res.json({user});
   }
 }
 
