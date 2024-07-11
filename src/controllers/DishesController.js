@@ -69,14 +69,61 @@ class DishesController {
     
     let dishes;
 
-    if(name){
-      dishes = await knex('dishes').whereLike("name", `%${name}%`);
+    if (name) {
+      dishes = await knex('dishes')
+        .leftJoin('ingredients', 'dishes.id', 'ingredients.dish_id')
+        .where('dishes.name', 'like', `%${name}%`)
+        .orWhere('ingredients.name', 'like', `%${name}%`)
+        .select('dishes.*')
+        .distinct();
     } else {
       dishes = await knex('dishes');
     }
     
 
     return res.json(dishes);
+  }
+
+  async patch(req, res){
+    const { name, category, description, ingredients, price } = req.body;
+    const { id } = req.params;
+
+    if(req.file){
+      const dish_img = req.file.filename;
+      const diskStorage = new DiskStorage();
+      const filename = await diskStorage.saveFile(dish_img);
+      await knex('dishes')
+      .where({ id })
+      .update({
+        image: filename
+      });
+    }
+
+    if(!name || !description || !price || !category ) {
+      throw new AppError("Preencha todas as informações obrigatórias sobre o prato.", 401);
+    }
+
+    await knex('dishes')
+      .where({ id })
+      .update({
+        name,
+        category,
+        description,
+        price,
+      });
+
+      await knex('ingredients').where({ dish_id: id }).delete();
+      if(ingredients){
+      const ingredientsInsert = ingredients.map((ingredient) => {
+        return{
+          dish_id: id,
+          name: ingredient
+        }
+      });
+      await knex('ingredients').insert(ingredientsInsert);
+    }
+
+    return res.json({name, category, description, ingredients, price });
   }
 }
 
