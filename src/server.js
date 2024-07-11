@@ -11,7 +11,7 @@ const routes = require('./routes');
 const cors = require('cors');
 
 app.use(cors({
-  origin: ['http://localhost:5173', 'http://127.0.0.1:5173'],
+  origin: ['http://localhost:5173', 'http://127.0.0.1:5173', 'https://main--gregfoodexplorer.netlify.app'],
   credentials: true
 }));
 app.use(cookieParser())
