@@ -23,19 +23,26 @@ class DishesController {
       image : filename
     });
 
-    if(ingredients){
-      const ingredientsInsert = ingredients.map((ingredient) => {
-        return{
+    if (ingredients) {
+      if (Array.isArray(ingredients)) {
+        const ingredientsInsert = ingredients.map((ingredient) => {
+          return {
+            dish_id,
+            name: ingredient
+          };
+        });
+        await knex('ingredients').insert(ingredientsInsert);
+      } else {
+        const ingredientInsert = {
           dish_id,
-          name: ingredient
-        }
-      });
-      await knex('ingredients').insert(ingredientsInsert);
+          name: ingredients
+        };
+        await knex('ingredients').insert(ingredientInsert);
+      }
     }
-
     return res.json({name, category, description, ingredients, price, filename});
-  }
-
+  }    
+    
   async show(req, res){
     const { id } = req.params;
 
