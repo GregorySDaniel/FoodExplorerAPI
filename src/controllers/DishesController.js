@@ -24,17 +24,13 @@ class DishesController {
     });
 
     if(ingredients){
-      if(ingredients.lenght > 1){
-        const ingredientsInsert = ingredients.map((ingredient) => {
-          return{
-            dish_id,
-            name: ingredient
-          }
-        });
-        await knex('ingredients').insert(ingredientsInsert);
-      } else {
-        await knex('ingredients').insert(ingredients);
-      }
+      const ingredientsInsert = ingredients.map((ingredient) => {
+        return{
+          dish_id,
+          name: ingredient
+        }
+      });
+      await knex('ingredients').insert(ingredientsInsert);
     }
 
     return res.json({name, category, description, ingredients, price, filename});
